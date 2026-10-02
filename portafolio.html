@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Portafolio | Salvador Abé Castro </title>
+    <title>Portafolio | Salvador Abé Castro</title>
 
     <meta
         name="description"
@@ -28,7 +27,6 @@
         body {
             margin: 0;
             padding: 0;
-
             width: 100%;
             height: 100%;
         }
@@ -36,11 +34,7 @@
         body {
             background: #ffffff;
             color: #111111;
-
-            font-family:
-                Helvetica,
-                Arial,
-                sans-serif;
+            font-family: Helvetica, Arial, sans-serif;
         }
 
 
@@ -49,66 +43,46 @@
         ===================================================== */
 
         header {
-
             position: fixed;
-
             top: 0;
             left: 0;
-
             width: 100%;
-
             padding: 22px 28px;
-
             display: flex;
-
             justify-content: space-between;
-
             z-index: 100;
-
             pointer-events: none;
-
             font-size: 13px;
         }
 
-
-        /* =====================================================
-           NOMBRE
-        ===================================================== */
-
         .nombre {
-
             color: #111111;
-
             text-decoration: none;
-
             pointer-events: auto;
-
             cursor: pointer;
         }
 
-
-        /* =====================================================
-           NAVEGACIÓN HEADER
-        ===================================================== */
-
         .navegacion {
-
             display: flex;
-
             align-items: center;
-
             gap: 30px;
         }
 
-
         .navegacion a {
-
             color: #111111;
-
             text-decoration: none;
-
             pointer-events: auto;
+            cursor: pointer;
+        }
 
+        /* "Portafolio" es un botón: vuelve a la portada */
+        #volver {
+            border: none;
+            background: none;
+            padding: 0;
+            font: inherit;
+            color: inherit;
+            pointer-events: auto;
             cursor: pointer;
         }
 
@@ -118,361 +92,366 @@
         ===================================================== */
 
         .portafolio {
-
             width: 100%;
-
             min-height: 100vh;
-
-            padding:
-                90px
-                40px
-                50px;
+            padding: 90px 40px 50px;
         }
 
 
         /* =====================================================
-           GRILLA 6 x 6
+           GRILLA
         ===================================================== */
 
         .grilla {
-
             width: 100%;
-
             display: grid;
-
-            grid-template-columns:
-                repeat(6, 1fr);
-
+            grid-template-columns: repeat(6, 1fr);
             gap: 18px;
-
             max-width: 1800px;
-
             margin: 0 auto;
         }
 
-
-        /* =====================================================
-           LÁMINAS
-        ===================================================== */
-
         .objeto {
-
             position: relative;
-
             width: 100%;
-
             cursor: pointer;
-
             z-index: 1;
+            transition: transform 0.35s ease;
         }
-
 
         .objeto img {
-
             display: block;
-
             width: 100%;
-
             height: auto;
-
-            box-shadow:
-                0 4px 16px rgba(0,0,0,0.06);
-
-            transition:
-                box-shadow 0.35s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            transition: box-shadow 0.35s ease;
         }
-
-
-        /* =====================================================
-           HOVER
-        ===================================================== */
 
         .objeto:hover {
-
             z-index: 10;
-
-            transform:
-                translateY(-5px)
-                scale(1.025);
+            transform: translateY(-5px) scale(1.025);
         }
 
-
         .objeto:hover img {
-
-            box-shadow:
-                0 14px 35px rgba(0,0,0,0.14);
+            box-shadow: 0 14px 35px rgba(0,0,0,0.14);
         }
 
 
         /* =====================================================
-           ESTADO ACTIVO
+           ESTADO 1: PORTADA
         ===================================================== */
 
-        .objeto.activo {
+        body[data-estado="portada"] .portafolio {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 80px 40px 50px;
+        }
 
-            position: fixed !important;
+        body[data-estado="portada"] .grilla {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
 
-            left: 50% !important;
-            top: 50% !important;
+        body[data-estado="portada"] .objeto:not(:first-child) {
+            display: none;
+        }
 
-            width: auto !important;
-            height: auto !important;
+        body[data-estado="portada"] .objeto:first-child {
+            width: auto;
+            height: 100%;
+        }
 
-            max-width: 86vw !important;
-            max-height: 82vh !important;
+        body[data-estado="portada"] .objeto:first-child img {
+            width: auto;
+            height: 100%;
+            max-width: 90vw;
+            object-fit: contain;
+        }
 
-            transform:
-                translate(-50%, -50%) !important;
-
-            opacity: 1;
-
-            z-index: 1000;
-
+        body[data-estado="portada"] #volver {
             cursor: default;
         }
 
 
         /* =====================================================
-           TRANSICIONES
+           ESTADO 2: GRILLA
         ===================================================== */
 
-        .objeto.transicion-salida {
-
-            opacity: 0 !important;
-
-            transition:
-                opacity 0.18s ease-out;
+        @keyframes desplegar {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-
-        .objeto.transicion-entrada {
-
-            opacity: 0 !important;
-
-            transition:
-                opacity 0.18s ease-out;
-        }
-
-
-        .objeto.activo img {
-
-            width: auto;
-
-            height: auto;
-
-            max-width: 86vw;
-            max-height: 82vh;
-
-            object-fit: contain;
+        body[data-estado="grilla"] .objeto {
+            animation: desplegar 0.5s ease both;
+            animation-delay: calc(var(--i) * 30ms);
         }
 
 
         /* =====================================================
-           OBJETOS OCULTOS
+           VISOR (doble página + zoom)
         ===================================================== */
 
-        .objeto.oculto {
-
+        .visor {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
             opacity: 0;
-
             pointer-events: none;
+            transition: opacity 0.3s ease;
+
+            /* El zoom y el arrastre los manejamos nosotros, no el navegador */
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .visor.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .paginas {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transform-origin: 50% 50%;
+            transition: opacity 0.15s ease;
+        }
+
+        /* Animación suave (botones, doble click). Al arrastrar o usar la
+           rueda no se usa, para que responda de inmediato. */
+        .paginas.suave {
+            transition: transform 0.25s ease, opacity 0.15s ease;
+        }
+
+        .paginas.cambiando {
+            opacity: 0;
+        }
+
+        .paginas img {
+            display: block;
+            width: auto;
+            height: auto;
+            max-width: 43vw;
+            max-height: 82vh;
+            object-fit: contain;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            cursor: zoom-in;
+            -webkit-user-drag: none;
+        }
+
+        .paginas.sola img {
+            max-width: 84vw;
+        }
+
+        .visor.ampliado .paginas img {
+            cursor: grab;
+        }
+
+        .visor.arrastrando .paginas img {
+            cursor: grabbing;
         }
 
 
         /* =====================================================
-           CERRAR
+           CONTROLES
         ===================================================== */
 
         .cerrar {
-
             position: fixed;
-
             top: 16px;
             right: 24px;
-
             z-index: 2000;
-
             border: none;
             background: none;
-
-            font-family:
-                Helvetica,
-                Arial,
-                sans-serif;
-
+            font-family: Helvetica, Arial, sans-serif;
             font-size: 28px;
-
             font-weight: 300;
-
             cursor: pointer;
-
             opacity: 0;
-
             pointer-events: none;
-
-            transition:
-                opacity 0.3s ease;
+            transition: opacity 0.3s ease;
         }
-
 
         .cerrar.visible {
-
             opacity: 1;
-
             pointer-events: auto;
         }
-
-
-        /* =====================================================
-           CONTADOR
-        ===================================================== */
 
         .contador {
-
             position: fixed;
-
             left: 28px;
             bottom: 22px;
-
             z-index: 2000;
-
             font-size: 11px;
-
             opacity: 0;
-
             pointer-events: none;
-
-            transition:
-                opacity 0.3s ease;
+            transition: opacity 0.3s ease;
         }
-
 
         .contador.visible {
-
             opacity: 1;
         }
 
-
-        /* =====================================================
-           NAVEGACIÓN
-        ===================================================== */
-
+        /* Control de zoom (abajo a la derecha) */
         .nav {
-
             position: fixed;
-
             right: 28px;
             bottom: 18px;
-
             z-index: 2000;
-
             display: flex;
-
+            align-items: center;
             gap: 15px;
-
             opacity: 0;
-
             pointer-events: none;
-
-            transition:
-                opacity 0.3s ease;
+            transition: opacity 0.3s ease;
         }
 
-
         .nav.visible {
-
             opacity: 1;
-
             pointer-events: auto;
         }
 
-
         .nav button {
-
             border: none;
             background: none;
-
-            font-family:
-                Helvetica,
-                Arial,
-                sans-serif;
-
+            padding: 0;
+            font-family: Helvetica, Arial, sans-serif;
             font-size: 18px;
-
             cursor: pointer;
         }
 
+        /* Porcentaje de zoom (también ajusta la vista al hacer click) */
+        #nivel {
+            font-size: 11px;
+            min-width: 38px;
+        }
+
 
         /* =====================================================
-           MOBILE
+           FLECHAS LATERALES
+           Zona de click grande, dibujo pequeño y delgado.
+        ===================================================== */
+
+        .flecha {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2000;
+
+            width: 56px;
+            height: 120px;
+            padding: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+            background: none;
+            color: #111111;
+            cursor: pointer;
+
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .flecha.izquierda { left: 14px; }
+        .flecha.derecha   { right: 14px; }
+
+        .flecha.visible {
+            opacity: 0.4;
+            pointer-events: auto;
+        }
+
+        .flecha.visible:hover,
+        .flecha.visible:focus-visible {
+            opacity: 1;
+        }
+
+        .flecha:focus-visible {
+            outline: 1px solid #111111;
+            outline-offset: -6px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
         ===================================================== */
 
         @media (max-width: 1000px) {
 
             .grilla {
-
-                grid-template-columns:
-                    repeat(4, 1fr);
-
+                grid-template-columns: repeat(4, 1fr);
                 gap: 14px;
             }
 
         }
 
-
         @media (max-width: 700px) {
 
             header {
-
-                padding:
-                    18px;
-
+                padding: 18px;
                 font-size: 11px;
             }
 
-
             .navegacion {
-
                 gap: 20px;
             }
 
-
-            .portafolio {
-
-                padding:
-                    70px
-                    18px
-                    40px;
+            .portafolio,
+            body[data-estado="portada"] .portafolio {
+                padding: 70px 18px 40px;
             }
 
-
             .grilla {
-
-                grid-template-columns:
-                    repeat(2, 1fr);
-
+                grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
 
-
-            .objeto.activo img {
-
-                max-width: 92vw;
-                max-height: 82vh;
-            }
-
-
             .contador {
-
                 left: 18px;
                 bottom: 18px;
             }
 
-
             .nav {
-
                 right: 18px;
                 bottom: 16px;
+                gap: 12px;
+            }
+
+            .flecha {
+                width: 32px;
+                height: 96px;
+            }
+
+            .flecha.izquierda { left: 2px; }
+            .flecha.derecha   { right: 2px; }
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            body[data-estado="grilla"] .objeto {
+                animation: none;
+            }
+
+            .paginas.suave {
+                transition: opacity 0.15s ease;
             }
 
         }
@@ -482,7 +461,7 @@
 </head>
 
 
-<body>
+<body data-estado="portada">
 
 
 <!-- =========================================================
@@ -491,24 +470,15 @@
 
 <header>
 
-    <a
-        href="index2.html"
-        class="nombre"
-        id="nombre"
-    >
+    <a href="index2.html" class="nombre" id="nombre">
         Salvador Abé Castro
     </a>
 
-
     <div class="navegacion">
 
-        <a href="atlas.html">
-            Atlas
-        </a>
+        <a href="atlas.html">Atlas</a>
 
-        <span>
-            Portafolio
-        </span>
+        <button id="volver" type="button">Portafolio</button>
 
     </div>
 
@@ -518,228 +488,50 @@
 
 <!-- =========================================================
      PORTAFOLIO
+     La primera lámina (01) es la portada.
 ========================================================== -->
 
 <main class="portafolio">
 
     <div class="grilla">
 
-
-        <!-- 01 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 .webp" alt="">
-        </div>
-
-
-        <!-- 02 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 2.webp" alt="">
-        </div>
-
-
-        <!-- 03 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 3.webp" alt="">
-        </div>
-
-
-        <!-- 04 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 4.webp" alt="">
-        </div>
-
-
-        <!-- 05 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 5.webp" alt="">
-        </div>
-
-
-        <!-- 06 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 6.webp" alt="">
-        </div>
-
-
-        <!-- 07 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 7.webp" alt="">
-        </div>
-
-
-        <!-- 08 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 8.webp" alt="">
-        </div>
-
-
-        <!-- 09 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 9.webp" alt="">
-        </div>
-
-
-        <!-- 10 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 10.webp" alt="">
-        </div>
-
-
-        <!-- 11 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 11.webp" alt="">
-        </div>
-
-
-        <!-- 12 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 12.webp" alt="">
-        </div>
-
-
-        <!-- 13 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 13.webp" alt="">
-        </div>
-
-
-        <!-- 14 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 14.webp" alt="">
-        </div>
-
-
-        <!-- 15 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 15.webp" alt="">
-        </div>
-
-
-        <!-- 16 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 16.webp" alt="">
-        </div>
-
-
-        <!-- 17 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 17.webp" alt="">
-        </div>
-
-
-        <!-- 18 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 18.webp" alt="">
-        </div>
-
-
-        <!-- 19 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 19.webp" alt="">
-        </div>
-
-
-        <!-- 20 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 20.webp" alt="">
-        </div>
-
-
-        <!-- 21 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 21.webp" alt="">
-        </div>
-
-
-        <!-- 22 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 22.webp" alt="">
-        </div>
-
-
-        <!-- 23 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 23.webp" alt="">
-        </div>
-
-
-        <!-- 24 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 24.webp" alt="">
-        </div>
-
-
-        <!-- 25 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 25.webp" alt="">
-        </div>
-
-
-        <!-- 26 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 26.webp" alt="">
-        </div>
-
-
-        <!-- 27 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 27.webp" alt="">
-        </div>
-
-
-        <!-- 28 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 28.webp" alt="">
-        </div>
-
-
-        <!-- 29 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 29.webp" alt="">
-        </div>
-
-
-        <!-- 30 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 30.webp" alt="">
-        </div>
-
-
-        <!-- 31 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 31.webp" alt="">
-        </div>
-
-
-        <!-- 32 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 32.webp" alt="">
-        </div>
-
-
-        <!-- 33 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 33.webp" alt="">
-        </div>
-
-
-        <!-- 34 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 34.webp" alt="">
-        </div>
-
-
-        <!-- 35 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 35.webp" alt="">
-        </div>
-
-
-        <!-- 36 -->
-        <div class="objeto">
-            <img src="images/Portafolio/Portafolio Salvador0 36.webp" alt="">
-        </div>
-
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 .webp" alt="Portada del portafolio"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 2.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 3.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 4.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 5.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 6.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 7.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 8.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 9.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 10.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 11.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 12.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 13.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 14.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 15.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 16.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 17.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 18.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 19.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 20.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 21.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 22.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 23.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 24.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 25.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 26.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 27.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 28.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 29.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 30.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 31.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 32.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 33.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 34.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 35.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 36.webp" alt="" loading="lazy"></div>
+        <div class="objeto"><img src="images/Portafolio/Portafolio Salvador0 37.webp" alt="" loading="lazy"></div>
 
     </div>
 
@@ -748,284 +540,475 @@
 
 
 <!-- =========================================================
-     CONTROLES
+     VISOR (se llena desde JavaScript)
 ========================================================== -->
 
-<button class="cerrar">
-    ×
-</button>
-
-
-<div class="contador">
-
-    <span id="actual">01</span>
-
-    /
-
-    <span id="total">36</span>
-
+<div class="visor" id="visor">
+    <div class="paginas" id="paginas"></div>
 </div>
 
 
+<!-- =========================================================
+     CONTROLES
+========================================================== -->
+
+<button class="cerrar" aria-label="Cerrar">×</button>
+
+<div class="contador">
+    <span id="actual">01</span>
+    /
+    <span id="total">37</span>
+</div>
+
+<!-- Flechas laterales -->
+<button class="flecha izquierda" id="anterior" aria-label="Página anterior">
+    <svg width="14" height="26" viewBox="0 0 14 26" fill="none"
+         stroke="currentColor" stroke-width="1.2"
+         stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="12,1 2,13 12,25"/>
+    </svg>
+</button>
+
+<button class="flecha derecha" id="siguiente" aria-label="Página siguiente">
+    <svg width="14" height="26" viewBox="0 0 14 26" fill="none"
+         stroke="currentColor" stroke-width="1.2"
+         stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="2,1 12,13 2,25"/>
+    </svg>
+</button>
+
+<!-- Zoom -->
 <div class="nav">
-
-    <button id="anterior">
-        ←
-    </button>
-
-    <button id="siguiente">
-        →
-    </button>
-
+    <button id="menos" aria-label="Alejar">−</button>
+    <button id="nivel" aria-label="Ajustar a pantalla" title="Ajustar a pantalla">100%</button>
+    <button id="mas" aria-label="Acercar">+</button>
 </div>
 
 
 
 <script>
 
-    const objetos =
-        document.querySelectorAll(".objeto");
+    const objetos    = document.querySelectorAll(".objeto");
+    const visor      = document.querySelector("#visor");
+    const paginas    = document.querySelector("#paginas");
+    const cerrar     = document.querySelector(".cerrar");
+    const contador   = document.querySelector(".contador");
+    const nav        = document.querySelector(".nav");
+    const flechas    = document.querySelectorAll(".flecha");
+    const actual     = document.querySelector("#actual");
+    const total      = document.querySelector("#total");
+    const anterior   = document.querySelector("#anterior");
+    const siguiente  = document.querySelector("#siguiente");
+    const volver     = document.querySelector("#volver");
+    const botonMas   = document.querySelector("#mas");
+    const botonMenos = document.querySelector("#menos");
+    const nivel      = document.querySelector("#nivel");
 
-    const cerrar =
-        document.querySelector(".cerrar");
+    const cantidad  = objetos.length;
+    const pantallaChica = window.matchMedia("(max-width: 700px)");
 
-    const contador =
-        document.querySelector(".contador");
+    let vistas = [];          // cada vista es [índice] o [índice, índice]
+    let vistaActiva = null;   // posición dentro de "vistas" (null = visor cerrado)
 
-    const actual =
-        document.querySelector("#actual");
+    const dos = n => String(n).padStart(2, "0");
 
-    const total =
-        document.querySelector("#total");
+    total.textContent = dos(cantidad);
 
-    const anterior =
-        document.querySelector("#anterior");
-
-    const siguiente =
-        document.querySelector("#siguiente");
-
-
-    let indiceActivo = null;
-
-
-    total.textContent =
-        String(objetos.length)
-            .padStart(2, "0");
+    objetos.forEach((objeto, i) => objeto.style.setProperty("--i", i));
 
 
     /* =====================================================
-       ABRIR
+       VISTAS
+       Computador: portada sola, luego de a dos (2-3, 4-5...)
+       Celular: una por una
     ===================================================== */
 
-    objetos.forEach(
-        (objeto, index) => {
+    function construirVistas() {
 
-            objeto.addEventListener(
-                "click",
-                () => {
+        vistas = [];
 
-                    indiceActivo = index;
+        if (pantallaChica.matches) {
 
+            for (let i = 0; i < cantidad; i++) vistas.push([i]);
 
-                    objetos.forEach(
-                        (otro, otroIndex) => {
+        } else {
 
-                            if (otroIndex === index) {
+            vistas.push([0]);
 
-                                otro.classList.add(
-                                    "activo"
-                                );
+            for (let i = 1; i < cantidad; i += 2) {
+                vistas.push(i + 1 < cantidad ? [i, i + 1] : [i]);
+            }
 
-                            } else {
+        }
 
-                                otro.classList.add(
-                                    "oculto"
-                                );
+    }
 
-                            }
-
-                        }
-                    );
+    function vistaDeLamina(indice) {
+        return vistas.findIndex(v => v.includes(indice));
+    }
 
 
-                    actualizarContador();
+    /* =====================================================
+       ESTADOS: portada ⇄ grilla
+    ===================================================== */
+
+    function irAGrilla() {
+        document.body.dataset.estado = "grilla";
+        window.scrollTo(0, 0);
+    }
+
+    function irAPortada() {
+        cerrarVisor();
+        document.body.dataset.estado = "portada";
+        window.scrollTo(0, 0);
+    }
+
+    volver.addEventListener("click", irAPortada);
+
+    objetos.forEach((objeto, index) => {
+
+        objeto.addEventListener("click", () => {
+
+            if (document.body.dataset.estado === "portada") {
+                irAGrilla();
+                return;
+            }
+
+            abrirVisor(index);
+
+        });
+
+    });
 
 
-                    cerrar.classList.add(
-                        "visible"
-                    );
+    /* =====================================================
+       ZOOM
+       Se aplica al spread completo (las dos páginas juntas),
+       así la estructura de la doble página nunca se rompe.
 
-                    contador.classList.add(
-                        "visible"
-                    );
+       s = escala (1 = ajustado a pantalla)
+       x, y = desplazamiento en píxeles
+    ===================================================== */
 
-                    document
-                        .querySelector(".nav")
-                        .classList.add(
-                            "visible"
-                        );
+    const ZOOM_MAX   = 3;     // 300 %  ← cámbialo aquí
+    const ZOOM_PASO  = 1.5;   // cada click en + o −
+    const ZOOM_DOBLE = 2;     // doble click
+    const MARGEN     = 40;    // espacio extra al llegar al borde
 
+    let s = 1;
+    let x = 0;
+    let y = 0;
+
+    function aplicar(suave = false) {
+
+        const ancho = paginas.offsetWidth  * s;
+        const alto  = paginas.offsetHeight * s;
+        const vw = visor.clientWidth;
+        const vh = visor.clientHeight;
+
+        // Límite de arrastre: el spread no puede salirse de la pantalla.
+        // Si cabe completo en un eje, queda centrado en ese eje.
+        const maxX = ancho > vw ? (ancho - vw) / 2 + MARGEN : 0;
+        const maxY = alto  > vh ? (alto  - vh) / 2 + MARGEN : 0;
+
+        x = Math.min(maxX, Math.max(-maxX, x));
+        y = Math.min(maxY, Math.max(-maxY, y));
+
+        paginas.classList.toggle("suave", suave);
+        paginas.style.transform =
+            "translate(" + x + "px, " + y + "px) scale(" + s + ")";
+
+        visor.classList.toggle("ampliado", s > 1.01);
+        nivel.textContent = Math.round(s * 100) + "%";
+
+    }
+
+    // Cambia el zoom manteniendo fijo el punto (px, py) bajo el cursor
+    function zoomEn(nuevo, px, py, suave = false) {
+
+        nuevo = Math.min(ZOOM_MAX, Math.max(1, nuevo));
+
+        const cx = visor.clientWidth  / 2;
+        const cy = visor.clientHeight / 2;
+
+        const qx = (px - cx - x) / s;
+        const qy = (py - cy - y) / s;
+
+        x = px - cx - qx * nuevo;
+        y = py - cy - qy * nuevo;
+        s = nuevo;
+
+        aplicar(suave);
+
+    }
+
+    function zoomCentro(factor) {
+        zoomEn(
+            s * factor,
+            visor.clientWidth  / 2,
+            visor.clientHeight / 2,
+            true
+        );
+    }
+
+    function reiniciarZoom(suave = false) {
+        s = 1;
+        x = 0;
+        y = 0;
+        aplicar(suave);
+    }
+
+    botonMas.addEventListener("click", () => zoomCentro(ZOOM_PASO));
+    botonMenos.addEventListener("click", () => zoomCentro(1 / ZOOM_PASO));
+    nivel.addEventListener("click", () => reiniciarZoom(true));
+
+
+    /* Rueda del mouse / pellizco en trackpad */
+
+    visor.addEventListener("wheel", event => {
+
+        event.preventDefault();
+
+        const delta = event.deltaMode === 1
+            ? event.deltaY * 33
+            : event.deltaY;
+
+        const factor = Math.exp(-delta * (event.ctrlKey ? 0.01 : 0.002));
+
+        zoomEn(s * factor, event.clientX, event.clientY);
+
+    }, { passive: false });
+
+
+    /* Doble click: acerca en ese punto, o vuelve a ajustar */
+
+    visor.addEventListener("dblclick", event => {
+
+        if (s > 1.01) {
+            reiniciarZoom(true);
+        } else {
+            zoomEn(ZOOM_DOBLE, event.clientX, event.clientY, true);
+        }
+
+    });
+
+
+    /* Arrastrar (mouse o dedo) y pellizcar (dos dedos) */
+
+    const punteros = new Map();
+    let ultimaDistancia = 0;
+    let huboPellizco = false;
+    let inicioToque = null;
+
+    visor.addEventListener("dragstart", event => event.preventDefault());
+
+    visor.addEventListener("pointerdown", event => {
+
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+
+        visor.setPointerCapture(event.pointerId);
+        punteros.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+        if (punteros.size === 1) {
+            inicioToque = { x: event.clientX, y: event.clientY };
+            huboPellizco = false;
+            if (s > 1.01) visor.classList.add("arrastrando");
+        }
+
+        if (punteros.size === 2) {
+            huboPellizco = true;
+            const [a, b] = [...punteros.values()];
+            ultimaDistancia = Math.hypot(a.x - b.x, a.y - b.y);
+        }
+
+    });
+
+    visor.addEventListener("pointermove", event => {
+
+        if (!punteros.has(event.pointerId)) return;
+
+        const previo = punteros.get(event.pointerId);
+        punteros.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+        if (punteros.size === 2) {
+
+            const [a, b] = [...punteros.values()];
+            const distancia = Math.hypot(a.x - b.x, a.y - b.y);
+
+            if (ultimaDistancia > 0) {
+                zoomEn(
+                    s * distancia / ultimaDistancia,
+                    (a.x + b.x) / 2,
+                    (a.y + b.y) / 2
+                );
+            }
+
+            ultimaDistancia = distancia;
+
+        } else if (s > 1.01) {
+
+            x += event.clientX - previo.x;
+            y += event.clientY - previo.y;
+            aplicar();
+
+        }
+
+    });
+
+    function soltar(event) {
+
+        if (!punteros.has(event.pointerId)) return;
+
+        punteros.delete(event.pointerId);
+        visor.classList.remove("arrastrando");
+
+        if (punteros.size === 0) {
+
+            // Deslizar de lado a lado cambia de lámina (solo táctil y sin zoom)
+            if (
+                inicioToque &&
+                !huboPellizco &&
+                s <= 1.01 &&
+                event.pointerType === "touch" &&
+                event.type === "pointerup"
+            ) {
+
+                const dx = event.clientX - inicioToque.x;
+                const dy = event.clientY - inicioToque.y;
+
+                if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                    ir(vistaActiva + (dx < 0 ? 1 : -1));
                 }
-            );
+
+            }
+
+            inicioToque = null;
 
         }
-    );
-
-
-    /* =====================================================
-       CONTADOR
-    ===================================================== */
-
-    function actualizarContador() {
-
-        actual.textContent =
-            String(indiceActivo + 1)
-                .padStart(2, "0");
 
     }
 
+    visor.addEventListener("pointerup", soltar);
+    visor.addEventListener("pointercancel", soltar);
+
+    window.addEventListener("resize", () => {
+        if (vistaActiva !== null) aplicar();
+    });
+
 
     /* =====================================================
-       MOSTRAR
+       VISOR
     ===================================================== */
 
-    function mostrar(index) {
+    function dibujar() {
 
-        if (index < 0) {
-            index = objetos.length - 1;
-        }
+        const vista = vistas[vistaActiva];
 
+        paginas.innerHTML = "";
+        paginas.classList.toggle("sola", pantallaChica.matches);
 
-        if (index >= objetos.length) {
-            index = 0;
-        }
+        vista.forEach(i => {
+            const img = document.createElement("img");
+            img.src = objetos[i].querySelector("img").src;
+            img.alt = "Lámina " + dos(i + 1);
+            img.draggable = false;
+            paginas.appendChild(img);
+        });
 
+        actual.textContent = vista.map(i => dos(i + 1)).join("–");
 
-        objetos.forEach(
-            objeto => {
-
-                objeto.classList.remove("activo");
-                objeto.classList.add("oculto");
-
-            }
-        );
-
-
-        objetos[index]
-            .classList.remove("oculto");
-
-        objetos[index]
-            .classList.add("activo");
-
-
-        indiceActivo = index;
-
-        actualizarContador();
+        // Cada spread nuevo parte ajustado a pantalla
+        reiniciarZoom(false);
 
     }
 
+    function abrirVisor(indiceLamina) {
 
-    /* =====================================================
-       CERRAR
-    ===================================================== */
+        construirVistas();
+        vistaActiva = vistaDeLamina(indiceLamina);
+        dibujar();
 
-    function cerrarAtlas() {
+        visor.classList.add("visible");
+        cerrar.classList.add("visible");
+        contador.classList.add("visible");
+        nav.classList.add("visible");
+        flechas.forEach(f => f.classList.add("visible"));
 
-        objetos.forEach(
-            objeto => {
+    }
 
-                objeto.classList.remove("activo");
-                objeto.classList.remove("oculto");
+    function cerrarVisor() {
 
-            }
-        );
-
-
+        visor.classList.remove("visible");
         cerrar.classList.remove("visible");
-
         contador.classList.remove("visible");
+        nav.classList.remove("visible");
+        flechas.forEach(f => f.classList.remove("visible"));
 
-        document
-            .querySelector(".nav")
-            .classList.remove("visible");
-
-
-        indiceActivo = null;
+        vistaActiva = null;
 
     }
 
+    function ir(posicion) {
 
-    cerrar.addEventListener(
-        "click",
-        cerrarAtlas
-    );
+        if (vistaActiva === null) return;
 
+        if (posicion < 0) posicion = vistas.length - 1;
+        if (posicion >= vistas.length) posicion = 0;
 
-    /* =====================================================
-       NAVEGACIÓN
-    ===================================================== */
+        paginas.classList.add("cambiando");
 
-    anterior.addEventListener(
-        "click",
-        () => {
+        setTimeout(() => {
+            vistaActiva = posicion;
+            dibujar();
+            paginas.classList.remove("cambiando");
+        }, 150);
 
-            if (indiceActivo !== null) {
+    }
 
-                mostrar(
-                    indiceActivo - 1
-                );
-
-            }
-
-        }
-    );
-
-
-    siguiente.addEventListener(
-        "click",
-        () => {
-
-            if (indiceActivo !== null) {
-
-                mostrar(
-                    indiceActivo + 1
-                );
-
-            }
-
-        }
-    );
+    cerrar.addEventListener("click", cerrarVisor);
+    anterior.addEventListener("click", () => ir(vistaActiva - 1));
+    siguiente.addEventListener("click", () => ir(vistaActiva + 1));
 
 
     /* =====================================================
        TECLADO
     ===================================================== */
 
-    document.addEventListener(
-        "keydown",
-        event => {
+    document.addEventListener("keydown", event => {
 
-            if (indiceActivo === null) {
-                return;
-            }
+        if (vistaActiva === null) return;
 
-
-            if (event.key === "Escape") {
-                cerrarAtlas();
-            }
-
-
-            if (event.key === "ArrowLeft") {
-                mostrar(indiceActivo - 1);
-            }
-
-
-            if (event.key === "ArrowRight") {
-                mostrar(indiceActivo + 1);
-            }
-
+        if (event.key === "Escape") {
+            if (s > 1.01) reiniciarZoom(true);
+            else cerrarVisor();
         }
-    );
+
+        if (event.key === "ArrowLeft")  ir(vistaActiva - 1);
+        if (event.key === "ArrowRight") ir(vistaActiva + 1);
+
+        if (event.key === "+" || event.key === "=") zoomCentro(ZOOM_PASO);
+        if (event.key === "-" || event.key === "_") zoomCentro(1 / ZOOM_PASO);
+        if (event.key === "0") reiniciarZoom(true);
+
+    });
+
+
+    /* =====================================================
+       CAMBIO DE TAMAÑO (celular ⇄ computador)
+       Mantiene la lámina que se estaba viendo.
+    ===================================================== */
+
+    pantallaChica.addEventListener("change", () => {
+
+        if (vistaActiva === null) return;
+
+        const laminaActual = vistas[vistaActiva][0];
+
+        construirVistas();
+        vistaActiva = vistaDeLamina(laminaActual);
+        dibujar();
+
+    });
 
 </script>
 
@@ -1033,4 +1016,3 @@
 </body>
 
 </html>
-```
