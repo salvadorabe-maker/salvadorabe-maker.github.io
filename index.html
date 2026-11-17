@@ -2,29 +2,13 @@
 <html lang="es">
 
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Salvador Abé Castro</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
-<link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
->
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap"
-    rel="stylesheet"
->
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
 
 <style>
 
@@ -36,26 +20,16 @@
     box-sizing: border-box;
 }
 
-
 html,
 body {
-
     margin: 0;
     padding: 0;
-
     width: 100%;
     height: 100%;
-
     overflow: hidden;
-
     background: #ffffff;
-
     color: #111111;
-
-    font-family:
-        Helvetica,
-        Arial,
-        sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 
@@ -64,158 +38,84 @@ body {
 ===================================================== */
 
 .portada {
-
     position: relative;
-
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     overflow: hidden;
 }
 
 
 /* =====================================================
-   CAMPO DE COLOR
+   CAMPO DE COLOR (OPTIMIZADO GPU)
 ===================================================== */
 
 .color {
-
     position: fixed;
-
-    inset: -15%;
-
+    left: 50%;
+    top: 50%;
+    /* 150vmax garantiza cubrir toda la pantalla en cualquier proporción (vertical u horizontal) */
+    width: 150vmax;
+    height: 150vmax;
+    border-radius: 50%;
     z-index: 1;
-
     pointer-events: none;
+    overflow: hidden;
 
-    /*
-       El círculo empieza completamente cerrado.
-       El centro coincide con el nombre.
-    */
-
-    clip-path:
-
-        circle(
-            0%
-            at 50% 50%
-        );
-
+    /* Inicia escalado a 0 desde el centro exacto */
+    transform: translate(-50%, -50%) scale(0);
     opacity: 0;
+    will-change: transform, opacity;
 
     transition:
-
-        clip-path 8s
-        cubic-bezier(.16,.6,.14,1),
-
+        transform 8s cubic-bezier(.16,.6,.14,1),
         opacity 2s ease;
 
-
-    /*
-       CAMPO CROMÁTICO PRINCIPAL
-    */
-
+    /* CAMPO CROMÁTICO PRINCIPAL */
     background:
-
         radial-gradient(
-
-            circle at 10% 10%,
-
+            circle at 18% 18%,
             #2455ff 0%,
             #2455ff 7%,
-
             #394fe8 10%,
             #6048d0 18%,
-
             #8b43b8 30%,
             #b83f9b 42%,
-
             #d9427d 55%,
             #e94762 68%,
-
             #ef4e4b 82%,
             #f96a40 100%
         );
-
-    background-blend-mode:
-        normal;
 }
 
 
 /* =====================================================
-   SEGUNDA CAPA CROMÁTICA
+   SEGUNDA CAPA CROMÁTICA (SIN BLUR EN TIEMPO REAL)
 ===================================================== */
 
 .color::before {
-
     content: "";
-
     position: absolute;
-
     inset: 0;
-
     pointer-events: none;
-
     background:
-
         radial-gradient(
-
             circle at 68% 38%,
-
-            rgba(
-                255,
-                93,
-                55,
-                0.45
-            )
-            0%,
-
-            rgba(
-                255,
-                93,
-                55,
-                0.22
-            )
-            25%,
-
-            transparent
-            58%
+            rgba(255, 93, 55, 0.42) 0%,
+            rgba(255, 93, 55, 0.20) 28%,
+            rgba(255, 93, 55, 0.05) 48%,
+            transparent 65%
         ),
-
         radial-gradient(
-
             circle at 30% 68%,
-
-            rgba(
-                109,
-                55,
-                205,
-                0.30
-            )
-            0%,
-
-            rgba(
-                109,
-                55,
-                205,
-                0.12
-            )
-            30%,
-
-            transparent
-            60%
+            rgba(109, 55, 205, 0.28) 0%,
+            rgba(109, 55, 205, 0.11) 32%,
+            rgba(109, 55, 205, 0.03) 50%,
+            transparent 68%
         );
-
-    filter:
-        blur(25px);
-
-    transform:
-        scale(1.08);
 }
 
 
@@ -224,26 +124,15 @@ body {
 ===================================================== */
 
 .color::after {
-
     content: "";
-
     position: absolute;
-
     inset: 0;
-
     pointer-events: none;
-
     opacity: 0.09;
-
-    mix-blend-mode:
-        soft-light;
-
+    mix-blend-mode: soft-light;
     background-image:
-
         url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch' result='base'/%3E%3CfeColorMatrix in='base' type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0' result='mono'/%3E%3CfeGaussianBlur in='mono' stdDeviation='.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
-
-    background-size:
-        180px 180px;
+    background-size: 180px 180px;
 }
 
 
@@ -253,20 +142,11 @@ body {
 
 .interaccion:hover ~ .color,
 .interaccion.abierto ~ .color {
-
-    clip-path:
-
-        circle(
-            100%
-            at 50% 50%
-        );
-
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
 }
 
-
 .nombre:hover {
-
     z-index: 50;
 }
 
@@ -276,18 +156,12 @@ body {
 ===================================================== */
 
 .interaccion {
-
     position: absolute;
-
     left: 50%;
     top: 50%;
-
     width: 520px;
     height: 520px;
-
-    transform:
-        translate(-50%, -50%);
-
+    transform: translate(-50%, -50%);
     z-index: 20;
 }
 
@@ -297,53 +171,23 @@ body {
 ===================================================== */
 
 .nombre {
-
     position: absolute;
-
     left: 50%;
     top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    font-family:
-
-        "Archivo Black",
-        "Arial Black",
-        Arial,
-        sans-serif;
-
+    transform: translate(-50%, -50%);
+    font-family: "Archivo Black", "Arial Black", Arial, sans-serif;
     font-size: 14px;
-
     font-weight: 400;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        0.01em;
-
-    white-space:
-        nowrap;
-
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
     z-index: 40;
-
-    cursor:
-        pointer;
-
-    user-select:
-        none;
-
-    color:
-        transparent;
-
-    -webkit-text-stroke:
-        0.5px #111111;
-
+    cursor: pointer;
+    user-select: none;
+    color: transparent;
+    -webkit-text-stroke: 0.5px #111111;
     transition:
-
         color 0.25s ease,
-
         -webkit-text-stroke-color 0.25s ease;
 }
 
@@ -354,12 +198,8 @@ body {
 
 .interaccion:hover .nombre,
 .interaccion.abierto .nombre {
-
-    color:
-        #ffffff;
-
-    -webkit-text-stroke:
-        1px transparent;
+    color: #ffffff;
+    -webkit-text-stroke: 1px transparent;
 }
 
 
@@ -368,39 +208,22 @@ body {
 ===================================================== */
 
 .pie-menu {
-
     position: absolute;
-
     left: 50%;
     top: 50%;
-
     width: 520px;
     height: 520px;
-
-    transform:
-        translate(-50%, -50%);
-
+    transform: translate(-50%, -50%);
     z-index: 10;
-
     opacity: 0;
-
-    pointer-events:
-        none;
-
-    transition:
-
-        opacity 0.7s
-        cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+    transition: opacity 0.7s cubic-bezier(.2,.8,.2,1);
 }
-
 
 .interaccion:hover .pie-menu,
 .interaccion.abierto .pie-menu {
-
     opacity: 1;
-
-    pointer-events:
-        auto;
+    pointer-events: auto;
 }
 
 
@@ -409,41 +232,22 @@ body {
 ===================================================== */
 
 .radial {
-
     position: absolute;
-
     left: 50%;
     top: 50%;
-
     width: 270px;
     height: 270px;
-
-    transform:
-        translate(-50%, -50%);
-
-    border:
-
-        1px solid
-        rgba(17,17,17,0.35);
-
-    border-radius:
-        50%;
-
-    pointer-events:
-        none;
-
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(17,17,17,0.35);
+    border-radius: 50%;
+    pointer-events: none;
     z-index: 15;
-
-    transition:
-        border-color 0.3s ease;
+    transition: border-color 0.3s ease;
 }
-
 
 .interaccion:hover .radial,
 .interaccion.abierto .radial {
-
-    border-color:
-        rgba(255,255,255,0.55);
+    border-color: rgba(255,255,255,0.55);
 }
 
 
@@ -452,58 +256,23 @@ body {
 ===================================================== */
 
 .opcion {
-
     position: absolute;
-
     left: 50%;
     top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    font-family:
-
-        "Archivo Black",
-        "Arial Black",
-        Arial,
-        sans-serif;
-
-    font-size:
-        11.5px;
-
-    font-weight:
-        400;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        0.01em;
-
-    white-space:
-        nowrap;
-
-    color:
-        rgba(
-            255,
-            255,
-            255,
-            0.85
-        );
-
-    cursor:
-        pointer;
-
-    user-select:
-        none;
-
+    transform: translate(-50%, -50%);
+    font-family: "Archivo Black", "Arial Black", Arial, sans-serif;
+    font-size: 11.5px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    user-select: none;
     transition:
-
         color 0.22s ease,
         opacity 0.22s ease;
-
-    z-index:
-        30;
+    z-index: 30;
 }
 
 
@@ -512,192 +281,49 @@ body {
 ===================================================== */
 
 .opcion.activa {
-
-    color:
-        #ffffff;
+    color: #ffffff;
 }
+
 
 /* =====================================================
    POSICIONES
 ===================================================== */
 
-/*
-   RADIO BASE
-
-   Atlas define la distancia que nos gusta.
-*/
-
 :root {
-
-    --radio:
-        190px;
+    --radio: 190px;
 }
-
-
-/* =====================================================
-   ARRIBA
-   Atlas
-===================================================== */
 
 .opcion[data-sector="0"] {
-
-    transform:
-
-        translate(
-            -50%,
-            calc(
-                -1 *
-                var(--radio)
-            )
-        )
-
-        translateY(
-            -50%
-        );
+    transform: translate(-50%, calc(-1 * var(--radio))) translateY(-50%);
 }
-
-
-/* =====================================================
-   ARRIBA DERECHA
-   Portafolio
-===================================================== */
 
 .opcion[data-sector="1"] {
-
-    transform:
-
-        translate(
-            134px,
-            -134px
-        );
+    transform: translate(134px, -134px);
 }
-
-
-/* =====================================================
-   DERECHA
-   SoundCloud
-===================================================== */
-
-/*
-   IMPORTANTE:
-
-   Aquí NO centramos horizontalmente
-   la palabra.
-
-   El borde izquierdo de SoundCloud
-   queda exactamente sobre el radio.
-*/
 
 .opcion[data-sector="2"] {
-
-    transform:
-
-        translate(
-            var(--radio),
-            -50%
-        );
+    transform: translate(var(--radio), -50%);
 }
-
-
-/* =====================================================
-   ABAJO DERECHA
-   YouTube
-===================================================== */
 
 .opcion[data-sector="3"] {
-
-    transform:
-
-        translate(
-            134px,
-            134px
-        );
+    transform: translate(134px, 134px);
 }
-
-
-/* =====================================================
-   ABAJO
-   Flickr
-===================================================== */
 
 .opcion[data-sector="4"] {
-
-    transform:
-
-        translate(
-            -50%,
-            var(--radio)
-        );
+    transform: translate(-50%, var(--radio));
 }
-
-
-/* =====================================================
-   ABAJO IZQUIERDA
-   Spotify
-===================================================== */
 
 .opcion[data-sector="5"] {
-
-    transform:
-
-        translate(
-            calc(
-                -134px -
-                100%
-            ),
-            134px
-        );
+    transform: translate(calc(-134px - 100%), 134px);
 }
-
-
-/* =====================================================
-   IZQUIERDA
-   PÁGINA LOICA
-===================================================== */
-
-/*
-   IMPORTANTE:
-
-   Aquí el borde derecho de la palabra
-   queda exactamente sobre el radio.
-
-   Por eso PÁGINA LOICA no se mete
-   hacia el centro.
-*/
 
 .opcion[data-sector="6"] {
-
-    transform:
-
-        translate(
-            calc(
-                -1 *
-                var(--radio) -
-                100%
-            ),
-            -50%
-        );
+    transform: translate(calc(-1 * var(--radio) - 100%), -50%);
 }
-
-
-/* =====================================================
-   ARRIBA IZQUIERDA
-   AVD
-===================================================== */
 
 .opcion[data-sector="7"] {
-
-    transform:
-
-        translate(
-            calc(
-                -134px -
-                100%
-            ),
-            -134px
-        );
+    transform: translate(calc(-134px - 100%), -134px);
 }
-
 
 
 /* =====================================================
@@ -705,50 +331,22 @@ body {
 ===================================================== */
 
 .angulo {
-
     position: absolute;
-
     left: 50%;
     top: 50%;
-
-    transform:
-        translate(
-            -50%,
-            78px
-        );
-
-    font-size:
-        8px;
-
-    letter-spacing:
-        0.05em;
-
-    color:
-        rgb(
-            255,
-            255,
-            255
-        );
-
-    white-space:
-        nowrap;
-
-    pointer-events:
-        none;
-
-    opacity:
-        0;
-
-    transition:
-        opacity 0.2s ease;
+    transform: translate(-50%, 78px);
+    font-size: 8px;
+    letter-spacing: 0.05em;
+    color: rgb(255, 255, 255);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
-
 
 .interaccion:hover .angulo,
 .interaccion.abierto .angulo {
-
-    opacity:
-        1;
+    opacity: 1;
 }
 
 
@@ -757,181 +355,56 @@ body {
 ===================================================== */
 
 @media (max-width: 700px) {
-
-    .interaccion {
-
-        width:
-            340px;
-
-        height:
-            340px;
-    }
-
-
+    .interaccion,
     .pie-menu {
-
-        width:
-            340px;
-
-        height:
-            340px;
+        width: 340px;
+        height: 340px;
     }
-
 
     .radial {
-
-        width:
-            190px;
-
-        height:
-            190px;
+        width: 190px;
+        height: 190px;
     }
-
 
     .opcion {
-
-        font-size:
-            9.5px;
+        font-size: 9.5px;
     }
-
 
     .opcion[data-sector="0"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateY(
-                -130px
-            );
+        transform: translate(-50%, -50%) translateY(-130px);
     }
-
 
     .opcion[data-sector="1"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                92px,
-                -92px
-            );
+        transform: translate(-50%, -50%) translate(92px, -92px);
     }
-
 
     .opcion[data-sector="2"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateX(
-                148px
-            );
+        transform: translate(-50%, -50%) translateX(148px);
     }
-
 
     .opcion[data-sector="3"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                92px,
-                92px
-            );
+        transform: translate(-50%, -50%) translate(92px, 92px);
     }
-
 
     .opcion[data-sector="4"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateY(
-                130px
-            );
+        transform: translate(-50%, -50%) translateY(130px);
     }
-
 
     .opcion[data-sector="5"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                -92px,
-                92px
-            );
+        transform: translate(-50%, -50%) translate(-92px, 92px);
     }
-
 
     .opcion[data-sector="6"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateX(
-                -148px
-            );
+        transform: translate(-50%, -50%) translateX(-148px);
     }
-
 
     .opcion[data-sector="7"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                -92px,
-                -92px
-            );
+        transform: translate(-50%, -50%) translate(-92px, -92px);
     }
-
 
     .nombre {
-
-        font-size:
-            11px;
+        font-size: 11px;
     }
-
-
-    .color {
-
-        inset:
-            -25%;
-    }
-
 }
 
 
@@ -940,757 +413,192 @@ body {
 ===================================================== */
 
 @media (max-width: 380px) {
-
-    .interaccion {
-
-        width:
-            260px;
-
-        height:
-            260px;
-    }
-
-
+    .interaccion,
     .pie-menu {
-
-        width:
-            260px;
-
-        height:
-            260px;
+        width: 260px;
+        height: 260px;
     }
-
 
     .radial {
-
-        width:
-            145px;
-
-        height:
-            145px;
+        width: 145px;
+        height: 145px;
     }
-
 
     .opcion {
-
-        font-size:
-            8px;
+        font-size: 8px;
     }
-
 
     .opcion[data-sector="0"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateY(
-                -100px
-            );
+        transform: translate(-50%, -50%) translateY(-100px);
     }
-
 
     .opcion[data-sector="1"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                71px,
-                -71px
-            );
+        transform: translate(-50%, -50%) translate(71px, -71px);
     }
-
 
     .opcion[data-sector="2"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateX(
-                114px
-            );
+        transform: translate(-50%, -50%) translateX(114px);
     }
-
 
     .opcion[data-sector="3"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                71px,
-                71px
-            );
+        transform: translate(-50%, -50%) translate(71px, 71px);
     }
-
 
     .opcion[data-sector="4"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateY(
-                100px
-            );
+        transform: translate(-50%, -50%) translateY(100px);
     }
-
 
     .opcion[data-sector="5"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                -71px,
-                71px
-            );
+        transform: translate(-50%, -50%) translate(-71px, 71px);
     }
-
 
     .opcion[data-sector="6"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translateX(
-                -114px
-            );
+        transform: translate(-50%, -50%) translateX(-114px);
     }
-
 
     .opcion[data-sector="7"] {
-
-        transform:
-
-            translate(
-                -50%,
-                -50%
-            )
-
-            translate(
-                -71px,
-                -71px
-            );
+        transform: translate(-50%, -50%) translate(-71px, -71px);
     }
-
 
     .nombre {
-
-        font-size:
-            9px;
+        font-size: 9px;
     }
-
 }
 
 </style>
-
 </head>
-
 
 <body>
 
+<div class="portada" id="portada">
 
-<div
-    class="portada"
-    id="portada"
->
+    <!-- ZONA DE INTERACCIÓN -->
+    <div class="interaccion" id="interaccion">
 
-
-    <!-- =================================================
-         ZONA DE INTERACCIÓN
-    ================================================== -->
-
-    <div
-        class="interaccion"
-        id="interaccion"
-    >
-
-
-        <!-- =================================================
-             NOMBRE
-        ================================================== -->
-
-        <div
-            class="nombre"
-        >
+        <!-- NOMBRE -->
+        <div class="nombre">
             Salvador Abé Castro
         </div>
 
+        <!-- CÍRCULO -->
+        <div class="radial"></div>
 
-        <!-- =================================================
-             CÍRCULO
-        ================================================== -->
+        <!-- PIE MENU -->
+        <div class="pie-menu" id="pieMenu">
 
-        <div
-            class="radial"
-        ></div>
-
-
-        <!-- =================================================
-             PIE MENU
-        ================================================== -->
-
-        <div
-            class="pie-menu"
-            id="pieMenu"
-        >
-
-
-            <!-- =================================================
-                 OPCIONES
-            ================================================== -->
-
-
-            <!-- ATLAS -->
-
-            <div
-                class="opcion"
-
-                data-sector="0"
-
-                data-link="atlas_pixijs.html"
-
-                data-externo="false"
-            >
+            <div class="opcion" data-sector="0" data-link="atlas_pixijs.html" data-externo="false">
                 Atlas
             </div>
 
-
-            <!-- PORTAFOLIO -->
-
-            <div
-                class="opcion"
-
-                data-sector="1"
-
-                data-link="portafolio.html"
-
-                data-externo="false"
-            >
+            <div class="opcion" data-sector="1" data-link="portafolio.html" data-externo="false">
                 Portafolio
             </div>
 
-
-            <!-- SOUNDCLOUD -->
-
-            <div
-                class="opcion"
-
-                data-sector="2"
-
-                data-link="https://soundcloud.com/salvadorabe"
-
-                data-externo="true"
-            >
+            <div class="opcion" data-sector="2" data-link="https://soundcloud.com/salvadorabe" data-externo="true">
                 SoundCloud
             </div>
 
-
-            <!-- YOUTUBE -->
-
-            <div
-                class="opcion"
-
-                data-sector="3"
-
-                data-link="https://youtube.com/@salvadorabe?si=EsTIwUUoyjb73-e1"
-
-                data-externo="true"
-            >
+            <div class="opcion" data-sector="3" data-link="https://youtube.com/@salvadorabe?si=EsTIwUUoyjb73-e1" data-externo="true">
                 YouTube
             </div>
 
-
-            <!-- FLICKR -->
-
-            <div
-                class="opcion"
-
-                data-sector="4"
-
-                data-link="https://www.flickr.com/photos/salvadorabe"
-
-                data-externo="true"
-            >
+            <div class="opcion" data-sector="4" data-link="https://www.flickr.com/photos/salvadorabe" data-externo="true">
                 Flickr
             </div>
 
-
-            <!-- SPOTIFY -->
-
-            <div
-                class="opcion"
-
-                data-sector="5"
-
-                data-link="AQUI_TU_LINK_DE_SPOTIFY"
-
-                data-externo="true"
-            >
+            <div class="opcion" data-sector="5" data-link="AQUI_TU_LINK_DE_SPOTIFY" data-externo="true">
                 Spotify
             </div>
 
-
-            <!-- PÁGINA LOICA -->
-
-            <div
-                class="opcion"
-
-                data-sector="6"
-
-                data-link="https://loicaestudio.cl/"
-
-                data-externo="true"
-            >
+            <div class="opcion" data-sector="6" data-link="https://loicaestudio.cl/" data-externo="true">
                 PÁGINA LOICA
             </div>
 
-
-            <!-- AVD -->
-
-            <div
-                class="opcion"
-
-                data-sector="7"
-
-                data-link="AQUI_TU_SEXTO_LINK"
-
-                data-externo="true"
-            >
+            <div class="opcion" data-sector="7" data-link="AQUI_TU_SEXTO_LINK" data-externo="true">
                 AVD
             </div>
 
-
-            <!-- =================================================
-                 ÁNGULO
-            ================================================== -->
-
-            <div
-                class="angulo"
-                id="angulo"
-            >
+            <div class="angulo" id="angulo">
                 0°
             </div>
-
 
         </div>
 
     </div>
 
-
-    <!-- =================================================
-         CAMPO DE COLOR
-    ================================================== -->
-
-    <div
-        class="color"
-        id="color"
-    ></div>
-
+    <!-- CAMPO DE COLOR -->
+    <div class="color" id="color"></div>
 
 </div>
 
-
 <script>
+const interaccion = document.getElementById("interaccion");
+const opciones = document.querySelectorAll(".opcion");
+const angulo = document.getElementById("angulo");
+const nombre = document.querySelector(".nombre");
 
-/* =====================================================
-   ELEMENTOS
-===================================================== */
+const sectores = 8;
+const paso = 360 / sectores;
 
-const interaccion =
-    document.getElementById(
-        "interaccion"
-    );
+nombre.addEventListener("click", function(event) {
+    event.stopPropagation();
+    interaccion.classList.toggle("abierto");
+});
 
+document.addEventListener("click", function(event) {
+    if (!interaccion.contains(event.target)) {
+        interaccion.classList.remove("abierto");
+    }
+});
 
-const opciones =
-    document.querySelectorAll(
-        ".opcion"
-    );
-
-
-const angulo =
-    document.getElementById(
-        "angulo"
-    );
-
-
-const nombre =
-    document.querySelector(
-        ".nombre"
-    );
-
-
-/* =====================================================
-   CONFIGURACIÓN
-===================================================== */
-
-const sectores =
-    8;
-
-
-const paso =
-    360 / sectores;
-
-
-/* =====================================================
-   TOQUE / MÓVIL
-
-   En touch no existe un ":hover" real,
-   así que el menú se abre y cierra
-   con tap sobre el nombre.
-
-   El comportamiento de mouse/hover
-   en escritorio queda intacto.
-===================================================== */
-
-nombre.addEventListener(
-
-    "click",
-
-    function(event) {
-
+opciones.forEach(opcion => {
+    opcion.addEventListener("click", function(event) {
         event.stopPropagation();
+    });
+});
 
-        interaccion.classList.toggle(
-            "abierto"
-        );
+document.addEventListener("mousemove", function(event) {
+    const centroX = window.innerWidth / 2;
+    const centroY = window.innerHeight / 2;
+    const dx = event.clientX - centroX;
+    const dy = event.clientY - centroY;
 
+    if (!interaccion.matches(":hover") && !interaccion.classList.contains("abierto")) {
+        opciones.forEach(opcion => opcion.classList.remove("activa"));
+        return;
     }
 
-);
+    let grados = Math.atan2(dy, dx) * 180 / Math.PI;
+    grados += 90;
 
+    if (grados < 0) grados += 360;
+    if (grados >= 360) grados -= 360;
 
-document.addEventListener(
+    angulo.textContent = Math.round(grados) + "°";
 
-    "click",
+    const sector = Math.floor((grados + paso / 2) / paso) % sectores;
 
-    function(event) {
+    opciones.forEach(opcion => {
+        const numero = Number(opcion.dataset.sector);
+        opcion.classList.toggle("activa", numero === sector);
+    });
+});
 
-        if (
-            !interaccion.contains(
-                event.target
-            )
-        ) {
+opciones.forEach(opcion => {
+    opcion.addEventListener("click", function() {
+        const link = opcion.dataset.link;
+        const externo = opcion.dataset.externo === "true";
 
-            interaccion.classList.remove(
-                "abierto"
-            );
+        if (!link) return;
+
+        if (externo) {
+            window.open(link, "_blank");
+        } else {
+            window.location.href = link;
         }
-
-    }
-
-);
-
-
-opciones.forEach(
-
-    opcion => {
-
-        opcion.addEventListener(
-
-            "click",
-
-            function(event) {
-
-                event.stopPropagation();
-
-            }
-
-        );
-
-    }
-
-);
-
-
-/* =====================================================
-   MOUSE
-===================================================== */
-
-document.addEventListener(
-
-    "mousemove",
-
-    function(event) {
-
-
-        /*
-           Centro geométrico
-           de la portada.
-        */
-
-        const centroX =
-            window.innerWidth / 2;
-
-
-        const centroY =
-            window.innerHeight / 2;
-
-
-        const dx =
-            event.clientX -
-            centroX;
-
-
-        const dy =
-            event.clientY -
-            centroY;
-
-
-        /*
-           Si el menú no está activo,
-           eliminamos la selección.
-        */
-
-        if (
-            !interaccion.matches(
-                ":hover"
-            ) &&
-            !interaccion.classList.contains(
-                "abierto"
-            )
-        ) {
-
-            opciones.forEach(
-
-                opcion =>
-
-                    opcion.classList.remove(
-                        "activa"
-                    )
-
-            );
-
-            return;
-        }
-
-
-        /* =============================================
-           ÁNGULO
-
-           0°   = arriba
-           90°  = derecha
-           180° = abajo
-           270° = izquierda
-        ============================================= */
-
-        let grados =
-
-            Math.atan2(
-                dy,
-                dx
-            ) *
-
-            180 /
-            Math.PI;
-
-
-        grados +=
-            90;
-
-
-        if (
-            grados < 0
-        ) {
-
-            grados +=
-                360;
-        }
-
-
-        if (
-            grados >= 360
-        ) {
-
-            grados -=
-                360;
-        }
-
-
-        /* =============================================
-           MOSTRAR ÁNGULO
-        ============================================= */
-
-        angulo.textContent =
-
-            Math.round(
-                grados
-            ) +
-
-            "°";
-
-
-        /* =============================================
-           SECTOR
-        ============================================= */
-
-        const sector =
-
-            Math.floor(
-
-                (
-                    grados +
-                    paso / 2
-                )
-
-                /
-
-                paso
-
-            )
-
-            %
-
-            sectores;
-
-
-        /* =============================================
-           MARCAR OPCIÓN
-        ============================================= */
-
-        opciones.forEach(
-
-            opcion => {
-
-
-                const numero =
-
-                    Number(
-                        opcion.dataset.sector
-                    );
-
-
-                opcion.classList.toggle(
-
-                    "activa",
-
-                    numero === sector
-
-                );
-
-            }
-
-        );
-
-    }
-
-);
-
-
-/* =====================================================
-   CLICK EN OPCIONES
-===================================================== */
-
-opciones.forEach(
-
-    opcion => {
-
-        opcion.addEventListener(
-
-            "click",
-
-            function() {
-
-
-                /*
-                   Leemos directamente
-                   el link de esta opción.
-                */
-
-                const link =
-                    opcion.dataset.link;
-
-
-                /*
-                   Leemos si debe abrirse
-                   en otra pestaña.
-                */
-
-                const externo =
-                    opcion.dataset.externo ===
-                    "true";
-
-
-                /*
-                   Si no existe link,
-                   no hacemos nada.
-                */
-
-                if (
-                    !link
-                ) {
-
-                    return;
-                }
-
-
-                /*
-                   LINK EXTERNO
-                */
-
-                if (
-                    externo
-                ) {
-
-                    window.open(
-                        link,
-                        "_blank"
-                    );
-
-                }
-
-
-                /*
-                   LINK INTERNO
-                */
-
-                else {
-
-                    window.location.href =
-                        link;
-
-                }
-
-            }
-
-        );
-
-    }
-
-);
-
+    });
+});
 </script>
 
-
 </body>
-
 </html>
