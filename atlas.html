@@ -94,6 +94,7 @@
            Franja translúcida que flota sobre el escenario.
            La nube pasa por detrás. El degradado final evita
            que la franja termine en una línea dura.
+           Para subir o bajar el texto: primer valor del padding.
         ===================================================== */
 
         .margen-atlas {
@@ -121,9 +122,9 @@
 
         .descripcion-atlas {
             margin: 0;
-            width: 340px;
-            max-width: 340px;
-            font-size: 11px;
+            width: 300px;
+            max-width: 250px;
+            font-size: 10.5px;
             line-height: 1.5;
             font-weight: normal;
             text-align: justify;
@@ -172,12 +173,23 @@
         .foto {
             position: absolute;
             cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.5s ease, transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+            transition:
+                opacity 0.15s ease,
+                transform 0.14s ease-out,
+                box-shadow 0.14s ease-out;
+            animation: aparecer 0.6s ease backwards;
         }
 
-        .foto.visible {
-            opacity: 1;
+        /* Cada foto aparece sola, con un fundido suave, al insertarse */
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+            }
+        }
+
+        /* Fotos vecinas de la que está ampliada por la lupa */
+        .foto.atenuada {
+            opacity: 0.22;
         }
 
         .foto img {
@@ -426,7 +438,7 @@
             .descripcion-atlas {
                 width: calc(100vw - 40px);
                 max-width: calc(100vw - 40px);
-                font-size: 10px;
+                font-size: 11px;
                 line-height: 1.5;
                 text-align: justify;
             }
@@ -456,6 +468,7 @@
             .foto,
             #visor-img {
                 transition: none;
+                animation: none;
             }
 
         }
@@ -493,9 +506,33 @@
 
 
 <!-- =====================================================
+     MARGEN EDITORIAL ATLAS
+     Flota sobre el escenario (z-index) y deja pasar el mouse.
+===================================================== -->
+
+<section class="margen-atlas">
+
+    <h1 class="titulo-atlas">
+        ATLAS
+    </h1>
+
+    <p class="descripcion-atlas">
+
+        Colección miscelánea de fotografías tomadas con distintos medios.
+        son archivos dispersos en varias memorias, de límites difusos,
+        donde lo importante es la red de posibles relaciones
+        nuevas que aparecen volviendo a verlas juntas.
+        Fragmentos de lugares por los que he pasado.
+        -
+        Se re ordena todo con F5
+
+    </p>
+
+</section>
+
+
+<!-- =====================================================
      ESCENARIO
-     Va antes del margen en el código; el margen queda
-     encima por su z-index.
 ===================================================== -->
 
 <main id="escenario" class="n1">
@@ -526,31 +563,6 @@
 
 
 <!-- =====================================================
-     MARGEN EDITORIAL ATLAS
-===================================================== -->
-
-<section class="margen-atlas">
-
-    <h1 class="titulo-atlas">
-        ATLAS
-    </h1>
-
-    <p class="descripcion-atlas">
-
-        Colección miscelánea de fotografías tomadas con distintos medios.
-        son archivos dispersos en varias memorias, de límites difusos,
-        donde lo importante es la red de posibles relaciones
-        nuevas que aparecen volviendo a verlas juntas.
-        Fragmentos de algunos lugares donde he pasado.
-        -
-        Se re ordena todo con F5
-
-    </p>
-
-</section>
-
-
-<!-- =====================================================
      VISOR
 ===================================================== -->
 
@@ -565,7 +577,7 @@
 
         <span id="visor-num"></span>
 
-        <span class="pista-teclado">Flechas del teclado: anterior y siguiente</span>
+        <span class="pista-teclado">Flechas = anterior y siguiente</span>
         <span class="pista-tactil">Desliza: anterior y siguiente</span>
 
         <button type="button" id="visor-cerrar">Cerrar</button>
@@ -597,43 +609,50 @@
 
     const BASE = "images/Fotografías Atlas/";
 
-    /* Miniaturas: carpeta aparte, con el mismo nombre de archivo que
-       la foto original. Si esa carpeta no existe, se usan las
-       originales sin que tengas que cambiar nada. */
+    /* Tamaños de cada foto. Todas las carpetas usan el mismo nombre de
+       archivo. Las dos carpetas de miniaturas son opcionales: si una no
+       existe, se usa la siguiente (chicas, luego medianas, luego originales).
+
+         chicas:   ~200 px de ancho. Son las que forman la nube: livianas,
+                   cargan rápido y hacen fluido el zoom.
+         medianas: ~640 px de ancho. Se usan cuando una foto se ve grande.
+         original: se usa al abrir una foto en el visor. */
+    const USAR_CHICAS = true;
     const USAR_MINIATURAS = true;
 
+    const BASE_CHICA = "images/Fotografías Atlas miniaturas chicas/";
     const BASE_MINI = "images/Fotografías Atlas miniaturas/";
 
     const CFG = {
 
         /* Medidas del "mundo" (unidades internas, no píxeles) */
         ANCHO: 100,          // ancho base de cada foto
-        ESPACIO: 20,          // separación mínima entre fotos
-        VARIACION: 0.1,     // variación aleatoria de tamaño
+        ESPACIO: 8,          // separación mínima entre fotos (más = más aire)
+        VARIACION: 0.05,     // variación aleatoria de tamaño
         PASO_ESPIRAL: 5,     // qué tan fino busca lugar libre
         VENTANA_ESPIRAL: 1500, // cuánto vuelve atrás a rellenar huecos
-        FORMA: 3,            // 2 = nube ovalada; 4 = llena más las esquinas
+        FORMA: 4,            // 2 = nube ovalada; 4 = llena más las esquinas
 
         /* Descarga */
-
         CONCURRENCIA: 12,
 
         /* Cámara */
-
-        MARGEN_PX: 15,     // aire alrededor del universo completo
+        MARGEN_PX: 28,       // aire alrededor del universo completo
         FOTO_N2: 55,         // foto de 55px en pantalla = escala intermedia
         FRAC_N3: 0.33,       // foto de 33% del lado menor = escala detalle
         FRAC_MAX: 0.7,       // zoom máximo: foto al 70% del lado menor
-
-
-        /* Lupa: al ver todo el Atlas, la foto bajo el mouse crece */
+        /* Lupa: al ver todo el Atlas, las fotos cercanas al mouse crecen */
         LUPA: true,
-        LUPA_FOTO_PX: 210,   // ancho en pantalla de la foto bajo el cursor
-        LUPA_MAX: 8,         // máximo de aumento (veces su tamaño)
-        LUPA_HISTERESIS: 3,  // px de margen antes de pasar a la foto vecina
+        LUPA_RADIO: 120,     // px alrededor de la foto ampliada donde las vecinas se atenúan
+        LUPA_FOTO_PX: 160,   // tamaño en pantalla de la foto ampliada
+        LUPA_TOLERANCIA: 14, // px de distancia a una foto para que se amplíe
 
-        VEL_ZOOM: 0.003,    // sensibilidad de la rueda (más = más rápido)
-        TIEMPO_SUAVE: 70     // ms que tarda la cámara en asentarse
+        /* Calidad según el zoom */
+        PX_REFINAR: 100,     // desde este ancho en pantalla se usa la versión mediana
+
+        VEL_ZOOM: 0.0026,    // sensibilidad de la rueda (más = más rápido)
+        TIEMPO_SUAVE: 70,    // ms que tarda la cámara en asentarse al hacer zoom
+        TIEMPO_ENCUADRE: 520 // ms de los movimientos automáticos (botones, doble toque)
 
     };
 
@@ -702,7 +721,6 @@
     let tocado = false;    // true cuando la persona ya interactuó
     let terminado = false; // true cuando cargaron todas
     let intentos = 0;      // archivos ya intentados (existan o no)
-    let sumaProporcion = 0; // suma de alto/ancho de las fotos cargadas
 
 
     /* =====================================================
@@ -713,8 +731,19 @@
         return Math.min(max, Math.max(min, v));
     }
 
-    function ruta(src, mini) {
-        return encodeURI((mini ? BASE_MINI : BASE) + src);
+    function carpeta(tier) {
+
+        if (tier === "chica") return BASE_CHICA;
+        if (tier === "mini") return BASE_MINI;
+
+        return BASE;
+
+    }
+
+    function ruta(src, tier) {
+
+        return encodeURI(carpeta(tier) + src);
+
     }
 
     function numeroDe(src) {
@@ -760,19 +789,11 @@
 
     function estimarMitades() {
 
-        /* Área del rectángulo que ocupará la nube.
-           Simulada con la misma espiral: el rectángulo mide unas
-           2.0 veces (TOTAL x ANCHO x ANCHO x proporción media alto/ancho
-           de las fotos). Se usa 2.25 para quedar un poco sobre lo real:
-           si hay error, la cámara se acerca apenas al final en vez de
-           alejarse mientras cargan las fotos.
-           La proporción media se va afinando con las fotos ya cargadas;
-           al principio pesa un valor supuesto (0.8, 10 fotos de peso). */
-        const proporcion =
-            (sumaProporcion + 0.8 * 10) / (items.length + 10);
-
-        const areaCaja =
-            TOTAL * CFG.ANCHO * CFG.ANCHO * proporcion * 2.25;
+        /* Área del rectángulo que ocupará la nube (medida en pruebas:
+           unos 1.47 anchos de foto al cuadrado por foto con la separación
+           actual; se usa 1.55 para que, si se equivoca, la cámara se
+           acerque un poco al final en vez de alejarse) */
+        const areaCaja = TOTAL * CFG.ANCHO * CFG.ANCHO * 1.55;
 
         const b = Math.sqrt(areaCaja / (4 * EX));
 
@@ -879,25 +900,19 @@
 
     /* =====================================================
        LUPA
-       Solo en la escala "territorio" y solo con mouse: crece
-       UNA sola foto, la que está bajo el cursor, y pasa al
-       frente.
-       - La foto elegida se decide siempre según la posición
-         ORIGINAL (pequeña) de las fotos, nunca según la foto ya
-         agrandada. Así la foto grande no "atrapa" al cursor: al
-         moverte hacia la vecina, esta crece apenas cruzas el
-         límite entre ambas, como si el aumento siguiera al mouse.
-       - Cada foto "posee" también la mitad del espacio que la
-         rodea, así el cursor nunca queda sin dueña.
-       - Un pequeño margen (LUPA_HISTERESIS) evita que dos fotos
-         se alternen cuando el cursor está justo en el límite.
-       - La que deja de estar elegida sigue al frente mientras
-         se encoge, para que no "salte" detrás de las vecinas.
+       Solo en la escala "territorio" y solo con mouse: la foto
+       bajo el cursor se amplía (con un marco blanco y sombra) y
+       las vecinas se atenúan, para que se vea una sola imagen
+       clara. Se elige por la posición original de cada foto, así
+       que se puede pasar de una a otra aunque la ampliada tape
+       a las demás.
     ===================================================== */
 
-    let lupaActual = null;
+    let lupaFoco = null;
+    let lupaAtenuados = new Set();
     let lupaPos = null;
     let lupaPendiente = false;
+    let lupaTemporizador = null;
 
     function lupaProgramar(px, py) {
 
@@ -911,24 +926,29 @@
 
     }
 
-    function lupaSoltar() {
+    function lupaLimpiar() {
 
-        const o = lupaActual;
+        clearTimeout(lupaTemporizador);
 
-        if (!o) return;
+        if (lupaFoco) {
 
-        lupaActual = null;
+            lupaFoco.el.style.transform = "";
+            lupaFoco.el.style.zIndex = "";
+            lupaFoco.el.style.boxShadow = "";
 
-        o.el.style.transform = "";
-        o.el.style.zIndex = "500";
+            bajarCalidad(lupaFoco);
 
-        clearTimeout(o._temporizador);
+            lupaFoco = null;
 
-        o._temporizador = setTimeout(function () {
+        }
 
-            if (o !== lupaActual) o.el.style.zIndex = "";
+        for (const o of lupaAtenuados) {
 
-        }, 240);
+            o.el.classList.remove("atenuada");
+
+        }
+
+        lupaAtenuados = new Set();
 
     }
 
@@ -936,7 +956,7 @@
 
         lupaPos = null;
 
-        lupaSoltar();
+        lupaLimpiar();
 
     }
 
@@ -952,75 +972,94 @@
 
         }
 
+        /* Posición del cursor en el mundo */
         const wx = (lupaPos.x - cam.x) / cam.s;
         const wy = (lupaPos.y - cam.y) / cam.s;
 
-        const esc = Math.max(
-            1,
-            Math.min(CFG.LUPA_MAX, CFG.LUPA_FOTO_PX / (cam.s * CFG.ANCHO))
-        );
+        /* Foto cuyo rectángulo contiene el cursor, o la más cercana */
+        let mejor = null;
+        let mejorD = Infinity;
 
-        const m = CFG.ESPACIO / 2;
+        for (const o of items) {
 
-        /* Si el cursor sigue casi dentro del territorio de la foto
-           actual, se queda (solo unos pocos píxeles de margen) */
-        const h = CFG.LUPA_HISTERESIS / cam.s;
+            const dx = Math.max(o.x - wx, 0, wx - (o.x + o.w));
+            const dy = Math.max(o.y - wy, 0, wy - (o.y + o.h));
 
-        let elegido = null;
+            const d = Math.hypot(dx, dy);
 
-        if (lupaActual) {
+            if (d < mejorD) {
 
-            const o = lupaActual;
+                mejorD = d;
+                mejor = o;
 
-            if (
-                wx >= o.x - m - h && wx <= o.x + o.w + m + h &&
-                wy >= o.y - m - h && wy <= o.y + o.h + m + h
-            ) {
-
-                elegido = o;
+                if (d === 0) break;
 
             }
 
         }
 
-        if (!elegido) {
+        if (!mejor || mejorD * cam.s > CFG.LUPA_TOLERANCIA) {
 
-            let mejor = Infinity;
+            lupaLimpiar();
 
-            for (const o of items) {
+            return;
 
-                if (
-                    wx >= o.x - m && wx <= o.x + o.w + m &&
-                    wy >= o.y - m && wy <= o.y + o.h + m
-                ) {
+        }
 
-                    const d = Math.hypot(wx - o.cx, wy - o.cy);
+        if (mejor === lupaFoco) return;
 
-                    if (d < mejor) {
+        lupaLimpiar();
 
-                        mejor = d;
-                        elegido = o;
+        /* Ampliar la foto elegida */
+        const lado = Math.max(mejor.w, mejor.h) * cam.s;
 
-                    }
+        const esc = limitarValor(CFG.LUPA_FOTO_PX / lado, 1, 6);
 
-                }
+        const k = esc * cam.s;   // escala total en pantalla
+
+        const el = mejor.el;
+
+        el.style.transform = `scale(${esc.toFixed(3)})`;
+        el.style.zIndex = "1000";
+        el.style.boxShadow =
+            `0 0 0 ${(4 / k).toFixed(3)}px #fff, ` +
+            `0 ${(10 / k).toFixed(3)}px ${(28 / k).toFixed(3)}px rgba(0, 0, 0, 0.28)`;
+
+        lupaFoco = mejor;
+
+        /* Atenuar las vecinas cercanas */
+        const cxp = mejor.cx * cam.s + cam.x;
+        const cyp = mejor.cy * cam.s + cam.y;
+
+        for (const o of items) {
+
+            if (o === mejor) continue;
+
+            const dx = o.cx * cam.s + cam.x - cxp;
+            const dy = o.cy * cam.s + cam.y - cyp;
+
+            if (Math.hypot(dx, dy) < CFG.LUPA_RADIO) {
+
+                o.el.classList.add("atenuada");
+
+                lupaAtenuados.add(o);
 
             }
 
         }
 
-        if (elegido !== lupaActual) lupaSoltar();
+        /* Si el cursor se queda un momento, usa la versión mediana */
+        lupaTemporizador = setTimeout(function () {
 
-        if (elegido) {
+            if (lupaFoco === mejor) {
 
-            clearTimeout(elegido._temporizador);
+                mejor.quiereAlta = true;
 
-            elegido.el.style.transform = `scale(${esc.toFixed(3)})`;
-            elegido.el.style.zIndex = "1000";
+                subirCalidad(mejor);
 
-            lupaActual = elegido;
+            }
 
-        }
+        }, 140);
 
     }
 
@@ -1029,7 +1068,30 @@
        CÁMARA: APLICAR Y ANIMAR
     ===================================================== */
 
-    function aplicar() {
+    let textoEscala = "";
+    let tTextoEscala = 0;
+
+    /* El texto del indicador se actualiza como máximo cada 120 ms:
+       cambiarlo en cada fotograma obligaba a recalcular la barra */
+    function actualizarEtiqueta(n, forzar) {
+
+        const texto =
+            `${ETIQUETAS[n - 1]} ×${(cam.s / sMin).toFixed(1)}`;
+
+        if (texto === textoEscala) return;
+
+        const ahora = performance.now();
+
+        if (!forzar && ahora - tTextoEscala < 120) return;
+
+        textoEscala = texto;
+        tTextoEscala = ahora;
+
+        etiquetaEscala.textContent = texto;
+
+    }
+
+    function aplicar(forzar) {
 
         mundo.style.transform =
             `translate3d(${cam.x}px, ${cam.y}px, 0) scale(${cam.s})`;
@@ -1046,9 +1108,13 @@
             fotoPx < CFG.FOTO_N2 ? 1 :
             fotoPx < umbralN3 ? 2 : 3;
 
+        let cambio = false;
+
         if (n !== nivel) {
 
             nivel = n;
+
+            cambio = true;
 
             if (n !== 1) lupaApagar();
 
@@ -1061,15 +1127,21 @@
 
         }
 
-        etiquetaEscala.textContent =
-            `${ETIQUETAS[n - 1]} ×${(cam.s / sMin).toFixed(1)}`;
+        actualizarEtiqueta(n, forzar || cambio);
+
+        programarRefinar();
 
     }
 
     let animando = false;
     let tAnterior = 0;
+    let tauActual = CFG.TIEMPO_SUAVE;
 
-    function pedirFotograma() {
+    /* tauMs = qué tan lento se asienta la cámara. Para el zoom del
+       usuario es rápido; para los encuadres automáticos, más lento */
+    function pedirFotograma(tauMs) {
+
+        tauActual = tauMs || CFG.TIEMPO_SUAVE;
 
         if (animando) return;
 
@@ -1091,7 +1163,7 @@
 
         tAnterior = ahora;
 
-        const k = REDUCIR ? 1 : 1 - Math.exp(-dt / CFG.TIEMPO_SUAVE);
+        const k = REDUCIR ? 1 : 1 - Math.exp(-dt / tauActual);
 
         cam.s += (obj.s - cam.s) * k;
         cam.x += (obj.x - cam.x) * k;
@@ -1124,14 +1196,15 @@
 
         }
 
-        aplicar();
+        aplicar(llego);
 
     }
 
     /* instante = true: la cámara salta al encuadre sin animar.
-       Se usa mientras la persona no ha tocado nada, para que
-       la nube se vea completa desde el primer momento. */
-    function irAEncuadre(instante) {
+       Se usa mientras la persona no ha tocado nada, para que la
+       nube se vea completa desde el primer momento.
+       Los botones de escala y el doble toque sí animan. */
+    function irAEncuadre(instante, tauMs) {
 
         Object.assign(obj, camaraDeEncuadre());
 
@@ -1141,13 +1214,13 @@
 
             Object.assign(cam, obj);
 
-            aplicar();
+            aplicar(true);
 
             return;
 
         }
 
-        pedirFotograma();
+        pedirFotograma(tauMs || CFG.TIEMPO_ENCUADRE);
 
     }
 
@@ -1377,7 +1450,7 @@
 
     }
 
-    function agregar(src, img, esMini) {
+    function agregar(src, img, tier) {
 
         const variacion =
             1 + (Math.random() * 2 - 1) * CFG.VARIACION;
@@ -1391,7 +1464,11 @@
         const o = {
             src: src,
             numero: numeroDe(src),
-            esMini: esMini,
+            tier: tier,            // tamaño con el que se cargó: chica, mini u orig
+            alta: false,           // true mientras muestra la versión mediana
+            subiendo: false,
+            quiereAlta: false,
+            img: img,
             x: lugar.x,
             y: lugar.y,
             w: w,
@@ -1421,12 +1498,6 @@
 
         mundo.appendChild(el);
 
-        requestAnimationFrame(function () {
-            el.classList.add("visible");
-        });
-
-        sumaProporcion += img.naturalHeight / img.naturalWidth;
-
         items.push(o);
 
         programarEncuadre();
@@ -1436,12 +1507,20 @@
 
     /* =====================================================
        CARGA (cola con concurrencia limitada)
-       Intenta la miniatura; si no existe, usa la original.
+       Para cada foto intenta la versión chica; si esa carpeta no
+       existe, la mediana; y si tampoco, la original.
     ===================================================== */
 
-    let miniOk = 0;
-    let miniFallo = 0;
-    let usarMini = USAR_MINIATURAS;
+    const TIERS = ["chica", "mini", "orig"];
+
+    const disponible = {
+        chica: USAR_CHICAS,
+        mini: USAR_MINIATURAS,
+        orig: true
+    };
+
+    const acierto = { chica: 0, mini: 0 };
+    const fallo = { chica: 0, mini: 0 };
 
     function cargarUrl(url) {
 
@@ -1451,7 +1530,25 @@
 
             img.decoding = "async";
 
-            img.onload = function () { resolve(img); };
+            img.onload = function () {
+
+                /* decode() prepara la imagen fuera del hilo principal,
+                   así la página no se traba al insertarla */
+                if (img.decode) {
+
+                    img.decode().then(
+                        function () { resolve(img); },
+                        function () { resolve(img); }
+                    );
+
+                } else {
+
+                    resolve(img);
+
+                }
+
+            };
+
             img.onerror = function () { reject(url); };
 
             img.src = url;
@@ -1462,29 +1559,33 @@
 
     async function cargarImagen(src) {
 
-        if (usarMini) {
+        for (const tier of TIERS) {
+
+            if (!disponible[tier]) continue;
 
             try {
 
-                const img = await cargarUrl(ruta(src, true));
+                const img = await cargarUrl(ruta(src, tier));
 
-                miniOk++;
+                if (tier !== "orig") acierto[tier]++;
 
-                return { img: img, esMini: true };
+                return { img: img, tier: tier };
 
             } catch (e) {
 
-                miniFallo++;
+                if (tier === "orig") break;
 
-                /* Si ninguna de las primeras 12 miniaturas existe,
-                   se asume que no hay carpeta y se dejan de buscar.
-                   (Es 12 y no 1 porque algunos números ya no existen) */
-                if (miniFallo >= 12 && miniOk === 0) {
+                fallo[tier]++;
 
-                    usarMini = false;
+                /* Si ninguna de las primeras 12 existe, se asume que no
+                   hay carpeta y se deja de buscar en ella.
+                   (12 y no 1, por si falta algún archivo suelto) */
+                if (fallo[tier] >= 12 && acierto[tier] === 0) {
+
+                    disponible[tier] = false;
 
                     console.info(
-                        "No hay carpeta de miniaturas: se usan las fotos originales."
+                        `No se encontró la carpeta "${carpeta(tier)}": se usa la siguiente opción.`
                     );
 
                 }
@@ -1493,9 +1594,7 @@
 
         }
 
-        const img = await cargarUrl(ruta(src, false));
-
-        return { img: img, esMini: false };
+        throw src;
 
     }
 
@@ -1515,18 +1614,20 @@
     }
 
     /* Prueba cada patrón de nombre con las fotos 1, 2 y 3
-       (primero la miniatura, luego la original) */
+       (de la versión chica a la original) */
     async function elegirPatron() {
 
         for (const patron of PATRONES) {
 
             for (const n of [1, 2, 3]) {
 
-                for (const mini of (USAR_MINIATURAS ? [true, false] : [false])) {
+                for (const tier of TIERS) {
+
+                    if (!disponible[tier]) continue;
 
                     try {
 
-                        await cargarUrl(ruta(patron.nombre(n), mini));
+                        await cargarUrl(ruta(patron.nombre(n), tier));
 
                         return patron;
 
@@ -1559,8 +1660,9 @@
             console.error(
                 "Atlas: no se encontró ninguna foto. Se buscó en",
                 BASE,
-                "y en",
-                BASE_MINI
+                BASE_MINI,
+                "y",
+                BASE_CHICA
             );
 
             return;
@@ -1586,7 +1688,7 @@
 
                     const r = await cargarImagen(src);
 
-                    agregar(src, r.img, r.esMini);
+                    agregar(src, r.img, r.tier);
 
                 } catch (e) {
 
@@ -1622,13 +1724,6 @@
 
         }
 
-        console.info(
-            "Atlas: factor real de área = " +
-            (((caja.maxX - caja.minX) * (caja.maxY - caja.minY)) /
-                (TOTAL * CFG.ANCHO * CFG.ANCHO)).toFixed(2) +
-            " (esperado: unas 1.3 a 2.9, según la proporción de tus fotos)"
-        );
-
         /* Resumen para revisar (F12 > Consola) */
         const presentes = new Set(items.map(o => Number(o.numero)));
 
@@ -1641,9 +1736,17 @@
         }
 
         console.info(
+            "Atlas: factor real de área = " +
+            (((caja.maxX - caja.minX) * (caja.maxY - caja.minY)) /
+                (TOTAL * CFG.ANCHO * CFG.ANCHO)).toFixed(2) +
+            " (la estimación usa 1.55 en estimarMitades)"
+        );
+
+        console.info(
             `Atlas: ${items.length} fotos cargadas (esperadas: ${TOTAL}). ` +
             `Nombres con ${patron.texto}. ` +
-            (usarMini ? "Con miniaturas. " : "Sin miniaturas (originales). ") +
+            `Miniaturas chicas: ${disponible.chica ? "sí" : "no"}. ` +
+            `Miniaturas medianas: ${disponible.mini ? "sí" : "no"}. ` +
             (faltan.length ? `Números sin archivo: ${faltan.join(", ")}.` : "")
         );
 
@@ -1651,8 +1754,135 @@
 
 
     /* =====================================================
+       CALIDAD SEGÚN EL ZOOM
+       La nube usa las fotos chicas (livianas). Cuando una foto
+       se ve grande en pantalla se cambia por la mediana; cuando
+       deja de verse grande vuelve a la chica para liberar memoria.
+       Es lo que mantiene fluido el zoom: 355 fotos medianas
+       decodificadas ocupan cerca de 500 MB; las chicas, unos 50 MB.
+    ===================================================== */
+
+    let temporizadorRefinar = null;
+
+    function programarRefinar() {
+
+        clearTimeout(temporizadorRefinar);
+
+        temporizadorRefinar = setTimeout(refinar, 200);
+
+    }
+
+    function tierGrande() {
+
+        return disponible.mini ? "mini" : "orig";
+
+    }
+
+    function subirCalidad(o) {
+
+        if (o.tier !== "chica" || o.alta || o.subiendo) return;
+
+        o.subiendo = true;
+
+        const g = new Image();
+
+        g.decoding = "async";
+
+        g.onload = function () {
+
+            const listo = g.decode ? g.decode() : Promise.resolve();
+
+            listo.catch(function () {}).then(function () {
+
+                o.subiendo = false;
+
+                if (o.quiereAlta) {
+
+                    o.img.src = g.src;
+
+                    o.alta = true;
+
+                }
+
+            });
+
+        };
+
+        g.onerror = function () { o.subiendo = false; };
+
+        g.src = ruta(o.src, tierGrande());
+
+    }
+
+    function bajarCalidad(o) {
+
+        o.quiereAlta = false;
+
+        if (!o.alta) return;
+
+        o.alta = false;
+
+        o.img.src = ruta(o.src, o.tier);
+
+    }
+
+    function refinar() {
+
+        const margenPx = 120;
+
+        for (const o of items) {
+
+            if (o.tier !== "chica") continue;
+
+            const sx = o.x * cam.s + cam.x;
+            const sy = o.y * cam.s + cam.y;
+            const sw = o.w * cam.s;
+            const sh = o.h * cam.s;
+
+            const visible =
+                sx + sw > -margenPx && sx < SW + margenPx &&
+                sy + sh > -margenPx && sy < SH + margenPx;
+
+            if ((visible && sw >= CFG.PX_REFINAR) || o === lupaFoco) {
+
+                o.quiereAlta = true;
+
+                subirCalidad(o);
+
+            } else {
+
+                bajarCalidad(o);
+
+            }
+
+        }
+
+    }
+
+
+    /* =====================================================
        INTERACCIÓN: RUEDA
     ===================================================== */
+
+    /* Los eventos de la rueda se juntan y se aplican una vez por
+       fotograma: así un trackpad que dispara muchos eventos no
+       obliga a recalcular la cámara más veces de las necesarias */
+    let ruedaAcum = 0;
+    let ruedaX = 0;
+    let ruedaY = 0;
+    let ruedaPendiente = false;
+
+    function aplicarRueda() {
+
+        ruedaPendiente = false;
+
+        const factor = Math.exp(ruedaAcum);
+
+        ruedaAcum = 0;
+
+        zoomEn(factor, ruedaX, ruedaY);
+
+    }
 
     escenario.addEventListener(
         "wheel",
@@ -1674,12 +1904,20 @@
             d = limitarValor(d, -120, 120);
 
             /* ctrlKey = pellizco en trackpad */
-            const factor =
-                Math.exp(-d * (e.ctrlKey ? 0.015 : CFG.VEL_ZOOM));
+            ruedaAcum += -d * (e.ctrlKey ? 0.015 : CFG.VEL_ZOOM);
 
             const r = escenario.getBoundingClientRect();
 
-            zoomEn(factor, e.clientX - r.left, e.clientY - r.top);
+            ruedaX = e.clientX - r.left;
+            ruedaY = e.clientY - r.top;
+
+            if (!ruedaPendiente) {
+
+                ruedaPendiente = true;
+
+                requestAnimationFrame(aplicarRueda);
+
+            }
 
         },
         { passive: false }
@@ -1712,7 +1950,7 @@
                 x0: e.clientX,
                 y0: e.clientY,
                 movido: false,
-                diana: e.target.closest(".foto"),
+                diana: (nivel === 1 && lupaFoco) ? lupaFoco.el : e.target.closest(".foto"),
                 vx: 0,
                 vy: 0,
                 t: performance.now()
@@ -2032,7 +2270,7 @@
 
         const img = new Image();
 
-        img.src = ruta(o.src, false);
+        img.src = ruta(o.src, "orig");
 
         precargadas.push(img);
 
@@ -2054,13 +2292,14 @@
 
     }
 
+    /* Se muestra de inmediato lo que ya está en pantalla (aunque
+       sea la versión chica) y se va reemplazando por una mejor
+       a medida que llega: chica, mediana, original. */
     function mostrarEnVisor(item) {
 
         ordenarRecorrido();
 
         const token = ++tokenVisor;
-
-        const urlGrande = ruta(item.src, false);
 
         visorImg.classList.remove("lista");
 
@@ -2073,23 +2312,37 @@
 
         visorNum.textContent = "Atlas " + item.numero;
 
-        if (item.esMini) {
+        let rango = 0;
 
-            visorImg.src = ruta(item.src, true);
+        function poner(r, url) {
 
-            const grande = new Image();
+            if (token !== tokenVisor || r <= rango) return;
 
-            grande.onload = function () {
+            rango = r;
 
-                if (token === tokenVisor) visorImg.src = urlGrande;
+            visorImg.src = url;
 
-            };
+        }
 
-            grande.src = urlGrande;
+        const r0 =
+            item.tier === "orig" ? 3 :
+            (item.tier === "mini" || item.alta) ? 2 : 1;
 
-        } else {
+        poner(r0, item.img.src);
 
-            visorImg.src = urlGrande;
+        if (r0 < 2 && disponible.mini) {
+
+            const u = ruta(item.src, "mini");
+
+            cargarUrl(u).then(function () { poner(2, u); }).catch(function () {});
+
+        }
+
+        if (r0 < 3) {
+
+            const u = ruta(item.src, "orig");
+
+            cargarUrl(u).then(function () { poner(3, u); }).catch(function () {});
 
         }
 

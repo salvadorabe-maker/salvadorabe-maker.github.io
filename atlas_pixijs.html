@@ -40,14 +40,12 @@
         }
 
         /* La página no hace scroll: la rueda del mouse acerca
-           y aleja el Atlas. El body es una columna: arriba el
-           margen editorial, abajo el escenario ocupa el resto. */
+           y aleja el Atlas. El escenario ocupa toda la ventana
+           y el margen editorial flota encima, translúcido. */
         body {
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
 
 
@@ -93,15 +91,26 @@
 
         /* =====================================================
            MARGEN EDITORIAL ATLAS
+           Franja translúcida que flota sobre el escenario.
+           La nube pasa por detrás. El degradado final evita
+           que la franja termine en una línea dura.
+           Para subir o bajar el texto: primer valor del padding.
         ===================================================== */
 
         .margen-atlas {
-            flex: none;
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 88px 28px 18px 45px;
-            background: var(--fondo);
+            padding: 60px 28px 18px 28px;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.88) 0%,
+                rgba(255, 255, 255, 0.88) 70%,
+                rgba(255, 255, 255, 0) 100%
+            );
             z-index: 100;
+            pointer-events: none;
         }
 
         .titulo-atlas {
@@ -127,9 +136,8 @@
         ===================================================== */
 
         #escenario {
-            flex: 1;
-            min-height: 0;
-            position: relative;
+            position: absolute;
+            inset: 0;
             overflow: hidden;
             cursor: grab;
             touch-action: none;
@@ -148,6 +156,13 @@
             width: 0;
             height: 0;
             transform-origin: 0 0;
+        }
+
+        /* Mientras la cámara se mueve, el navegador trata el mundo
+           como una capa ya dibujada (más fluido). Al detenerse se
+           quita y las fotos se redibujan nítidas. */
+        #escenario.moviendo #mundo {
+            will-change: transform;
         }
 
 
@@ -412,7 +427,7 @@
             }
 
             .margen-atlas {
-                padding: 76px 20px 18px 20px;
+                padding: 52px 20px 18px 20px;
             }
 
             .titulo-atlas {
@@ -492,6 +507,7 @@
 
 <!-- =====================================================
      MARGEN EDITORIAL ATLAS
+     Flota sobre el escenario (z-index) y deja pasar el mouse.
 ===================================================== -->
 
 <section class="margen-atlas">
@@ -505,8 +521,9 @@
         Colección miscelánea de fotografías tomadas con distintos medios.
         son archivos dispersos en varias memorias, de límites difusos,
         donde lo importante es la red de posibles relaciones
-        nuevas que aparecen volviendo a verlas esta vez juntas.
+        nuevas que aparecen volviendo a verlas juntas.
         Fragmentos de lugares por los que he pasado.
+        -
         Se re ordena todo con F5
 
     </p>
@@ -635,7 +652,7 @@
 
         VEL_ZOOM: 0.0026,    // sensibilidad de la rueda (más = más rápido)
         TIEMPO_SUAVE: 70,    // ms que tarda la cámara en asentarse al hacer zoom
-        TIEMPO_ENCUADRE: 520 // ms de los movimientos automáticos (ver todo, carga)
+        TIEMPO_ENCUADRE: 520 // ms de los movimientos automáticos (botones, doble toque)
 
     };
 
@@ -659,6 +676,7 @@
     const cargaEl = document.getElementById("carga");
     const ayuda = document.getElementById("ayuda");
     const botonesNivel = [...document.querySelectorAll("#niveles button")];
+    const margen = document.querySelector(".margen-atlas");
 
     const visor = document.getElementById("visor");
     const visorImg = document.getElementById("visor-img");
@@ -677,6 +695,7 @@
 
     let SW = 0;            // ancho del escenario en px
     let SH = 0;            // alto del escenario en px
+    let TOP = 0;           // alto que ocupa la franja del margen (px)
     let EX = 1;            // qué tan "ancha" es la nube (según la pantalla)
 
     const items = [];      // todas las fotos colocadas
@@ -755,6 +774,10 @@
         SW = r.width;
         SH = r.height;
 
+        /* Alto que tapa la franja del margen: el encuadre
+           "ver todo" se calcula en el espacio libre debajo */
+        TOP = margen.getBoundingClientRect().bottom - r.top;
+
     }
 
 
@@ -807,7 +830,7 @@
 
         sMin = Math.min(
             (SW - 2 * CFG.MARGEN_PX) / bw,
-            (SH - 2 * CFG.MARGEN_PX) / bh
+            (SH - TOP - 2 * CFG.MARGEN_PX) / bh
         );
 
         const lado = Math.min(SW, SH);
@@ -823,7 +846,7 @@
         return {
             s: sMin,
             x: SW / 2 - centro.x * sMin,
-            y: SH / 2 - centro.y * sMin
+            y: TOP + (SH - TOP) / 2 - centro.y * sMin
         };
 
     }
@@ -1071,7 +1094,7 @@
     function aplicar(forzar) {
 
         mundo.style.transform =
-            `translate(${cam.x}px, ${cam.y}px) scale(${cam.s})`;
+            `translate3d(${cam.x}px, ${cam.y}px, 0) scale(${cam.s})`;
 
         if (marcaItem) {
 
@@ -1157,7 +1180,11 @@
             cam.x = obj.x;
             cam.y = obj.y;
 
+            escenario.classList.remove("moviendo");
+
         } else {
+
+            escenario.classList.add("moviendo");
 
             animando = true;
 
@@ -1173,11 +1200,25 @@
 
     }
 
-    function irAEncuadre(tauMs) {
+    /* instante = true: la cámara salta al encuadre sin animar.
+       Se usa mientras la persona no ha tocado nada, para que la
+       nube se vea completa desde el primer momento.
+       Los botones de escala y el doble toque sí animan. */
+    function irAEncuadre(instante, tauMs) {
 
         Object.assign(obj, camaraDeEncuadre());
 
         limitarCamara(obj);
+
+        if (instante) {
+
+            Object.assign(cam, obj);
+
+            aplicar(true);
+
+            return;
+
+        }
 
         pedirFotograma(tauMs || CFG.TIEMPO_ENCUADRE);
 
@@ -1395,7 +1436,7 @@
 
             if (!tocado) {
 
-                irAEncuadre();
+                irAEncuadre(true);
 
             } else {
 
@@ -1464,7 +1505,6 @@
     }
 
 
-    /* =====================================================
     /* =====================================================
        CARGA (cola con concurrencia limitada)
        Para cada foto intenta la versión chica; si esa carpeta no
@@ -1674,7 +1714,7 @@
 
         if (!tocado) {
 
-            irAEncuadre();
+            irAEncuadre(true);
 
         } else {
 
@@ -1694,6 +1734,13 @@
             if (!presentes.has(i)) faltan.push(i);
 
         }
+
+        console.info(
+            "Atlas: factor real de área = " +
+            (((caja.maxX - caja.minX) * (caja.maxY - caja.minY)) /
+                (TOTAL * CFG.ANCHO * CFG.ANCHO)).toFixed(2) +
+            " (la estimación usa 1.55 en estimarMitades)"
+        );
 
         console.info(
             `Atlas: ${items.length} fotos cargadas (esperadas: ${TOTAL}). ` +
@@ -1781,7 +1828,7 @@
 
     function refinar() {
 
-        const margen = 120;
+        const margenPx = 120;
 
         for (const o of items) {
 
@@ -1793,8 +1840,8 @@
             const sh = o.h * cam.s;
 
             const visible =
-                sx + sw > -margen && sx < SW + margen &&
-                sy + sh > -margen && sy < SH + margen;
+                sx + sw > -margenPx && sx < SW + margenPx &&
+                sy + sh > -margenPx && sy < SH + margenPx;
 
             if ((visible && sw >= CFG.PX_REFINAR) || o === lupaFoco) {
 
@@ -1877,7 +1924,6 @@
     );
 
 
-    /* =====================================================
     /* =====================================================
        INTERACCIÓN: ARRASTRAR, PELLIZCAR Y DOBLE TOQUE
     ===================================================== */
@@ -2479,11 +2525,14 @@
     /* =====================================================
        CAMBIO DE TAMAÑO
        No se reordena la nube: solo se reencuadra.
+       Observa el escenario y también la franja del margen,
+       por si su alto cambia (texto que se reparte en más
+       líneas en móvil).
     ===================================================== */
 
     let temporizadorResize = null;
 
-    new ResizeObserver(function () {
+    const observadorTamano = new ResizeObserver(function () {
 
         clearTimeout(temporizadorResize);
 
@@ -2495,7 +2544,7 @@
 
             if (!tocado) {
 
-                irAEncuadre();
+                irAEncuadre(true);
 
             } else {
 
@@ -2507,7 +2556,10 @@
 
         }, 150);
 
-    }).observe(escenario);
+    });
+
+    observadorTamano.observe(escenario);
+    observadorTamano.observe(margen);
 
 
     /* =====================================================
@@ -2516,7 +2568,7 @@
 
     medir();
 
-    EX = limitarValor(SW / SH, 0.55, 2.2);
+    EX = limitarValor(SW / (SH - TOP), 0.55, 2.2);
 
     calcular();
 
